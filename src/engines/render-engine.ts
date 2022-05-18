@@ -121,7 +121,9 @@ export class RenderEngine extends BasicRenderEngine {
             const plugin = this.plugins[index];
             const engine = this.children[index];
 
-            if (engine.flexible && plugin.height) {
+            if (engine.collapsed) {
+                return 'static';
+            } else if (engine.flexible && plugin.height) {
                 return 'flexibleStatic';
             } else if (!plugin.height) {
                 return 'flexibleGrowing';
