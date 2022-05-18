@@ -39,8 +39,9 @@ export default class FlameChartPlugin extends UIPlugin {
     initialClusterizedFlatTree: ClusterizedFlatTree;
     lastUsedColor: string | null;
     renderChartTimeout: number;
+    selectedNodeCallback: (any) => any | undefined;
 
-    constructor({ data, colors }) {
+    constructor({ data, colors, selectedNodeCallback }) {
         super();
 
         this.data = data;
@@ -49,6 +50,7 @@ export default class FlameChartPlugin extends UIPlugin {
         this.parseData();
         this.reset();
         this.maxDepth = 0;
+        this.selectedNodeCallback = selectedNodeCallback;
     }
 
     override init(renderEngine: OffscreenRenderEngine, interactionsEngine: SeparatedInteractionsEngine) {
@@ -126,6 +128,9 @@ export default class FlameChartPlugin extends UIPlugin {
 
             this.renderEngine.render();
 
+            if (this.selectedNodeCallback) {
+                this.selectedNodeCallback(region.data);
+            }
             this.emit('select', this.selectedRegion?.data, 'flame-chart-node');
         }
     }

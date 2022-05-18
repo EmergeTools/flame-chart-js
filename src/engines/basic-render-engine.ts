@@ -35,6 +35,7 @@ export type RenderOptions = {
           ) => boolean | void)
         | boolean;
     timeUnits: string;
+    selectedNodeCallback?: (any) => any;
 };
 
 export type RenderStyles = {

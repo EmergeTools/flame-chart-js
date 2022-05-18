@@ -13,6 +13,7 @@ export type FlameChartContainerStyles<Styles> = {
 export interface FlameChartContainerSettings<Styles> {
     options?: Partial<RenderOptions>;
     styles?: FlameChartContainerStyles<Styles>;
+    selectedNodeCallback?: (any) => any;
 }
 
 export interface FlameChartContainerOptions<Styles> {
