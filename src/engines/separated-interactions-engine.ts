@@ -23,6 +23,8 @@ export class SeparatedInteractionsEngine extends EventEmitter {
 
         renderEngine.on('clear', () => this.clearHitRegions());
 
+        // Here is where we add the listeners
+        // Idea: pass the flamechart-plugin to the constructor of details bar and then have that listen for select
         ['down', 'up', 'move', 'click', 'select'].forEach((eventName) =>
             parent.on(eventName, (region, mouse, isClick) => {
                 if (!region || region.id === this.id) {

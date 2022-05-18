@@ -119,6 +119,8 @@ export default class FlameChartPlugin extends UIPlugin {
     }
 
     handleSelect(region) {
+        console.log('selected node');
+        console.log(region);
         const selectedRegion = this.findNodeInCluster(region);
 
         if (this.selectedRegion !== selectedRegion) {
@@ -126,6 +128,7 @@ export default class FlameChartPlugin extends UIPlugin {
 
             this.renderEngine.render();
 
+            console.log('emitting select');
             this.emit('select', this.selectedRegion?.data, 'flame-chart-node');
         }
     }
@@ -303,6 +306,7 @@ export default class FlameChartPlugin extends UIPlugin {
 
         this.actualClusterizedFlatTree.forEach(processCluster(renderCluster));
 
+        // TODO could do this for hovering too
         if (this.selectedRegion && this.selectedRegion.type === 'node') {
             const {
                 source: { start, duration },

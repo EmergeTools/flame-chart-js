@@ -95,7 +95,7 @@ export default class FlameChart extends FlameChartContainer<FlameChartStyles> {
             activePlugins.push(flameChartPlugin);
             activePlugins.unshift(timeframeSelectorPlugin);
 
-            detailsBarPlugin = new DetailsBarPlugin({ data });
+            detailsBarPlugin = new DetailsBarPlugin({ flameChartPlugin });
             activePlugins.push(detailsBarPlugin);
         }
 
