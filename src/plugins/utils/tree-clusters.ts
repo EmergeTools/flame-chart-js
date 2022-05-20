@@ -78,6 +78,18 @@ const calcClusterDuration = (nodes: FlatTreeNode[]) => {
     return lastNode.source.start + lastNode.source.duration - firstNode.source.start;
 };
 
+const calcClusterColor = (nodes: FlatTreeNode[]) => {
+    let color = nodes[0].source.color;
+    let maxDuration = -1;
+    nodes.forEach((node) => {
+        if (node.source.duration > maxDuration) {
+            maxDuration = node.source.duration;
+            color = node.source.color;
+        }
+    });
+    return color;
+};
+
 const checkNodeTimeboundNesting = (node: FlatTreeNode, start: number, end: number) =>
     (node.source.start < end && node.end > start) || (node.source.start > start && node.end < end);
 
@@ -120,7 +132,6 @@ export const clusterizeFlatTree = (
 ): ClusterizedFlatTree => {
     let lastCluster: FlatTreeNode[] | null = null;
     let lastNode: FlatTreeNode | null = null;
-    let largestNode: FlatTreeNode | null = null;
     let index = 0;
 
     return metaClusterizedFlatTree
@@ -152,9 +163,6 @@ export const clusterizeFlatTree = (
                     }
 
                     lastNode = node;
-                    if (!largestNode || node.source.duration > largestNode.source.duration) {
-                        largestNode = node;
-                    }
                 }
             }
 
@@ -163,13 +171,14 @@ export const clusterizeFlatTree = (
         .map((nodes) => {
             const node = nodes[0];
             const duration = calcClusterDuration(nodes);
+            const color = calcClusterColor(nodes);
 
             return {
                 start: node.source.start,
                 end: node.source.start + duration,
                 duration,
                 type: node.source.type,
-                color: largestNode?.source.color,
+                color,
                 level: node.level,
                 nodes,
             };
