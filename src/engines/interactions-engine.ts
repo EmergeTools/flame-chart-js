@@ -120,7 +120,10 @@ export class InteractionsEngine extends EventEmitter {
 
     handleMouseWheelMove(e) {
         const deltaY = e.deltaY;
-        const deltaX = e.deltaX / 250;
+        let deltaX = 0;
+        if (Math.abs(e.deltaY) < Math.abs(e.deltaX)) {
+            deltaX = e.deltaX / (this.renderEngine.zoom / 2);
+        }
         this.emit('change-position', { deltaX: deltaX, deltaY: deltaY }, null, null, this.hoveredInstance);
     }
 
