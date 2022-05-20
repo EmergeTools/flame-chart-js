@@ -120,7 +120,8 @@ export class InteractionsEngine extends EventEmitter {
 
     handleMouseWheelMove(e) {
         const deltaY = e.deltaY;
-        this.emit('change-position', { deltaX: 0, deltaY: deltaY }, null, null, this.hoveredInstance);
+        const deltaX = e.deltaX / 250;
+        this.emit('change-position', { deltaX: deltaX, deltaY: deltaY }, null, null, this.hoveredInstance);
     }
 
     handleMouseWheel(e) {
