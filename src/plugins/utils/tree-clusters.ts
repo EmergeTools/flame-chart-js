@@ -6,6 +6,7 @@ import {
     FlatTree,
     FlatTreeNode,
     Node,
+    MetaClusterizedFlatTreeNode,
 } from '../../types';
 
 const MIN_BLOCK_SIZE = 1;
@@ -91,23 +92,25 @@ export function metaClusterizeFlatTree(
     flatTree: FlatTree,
     condition = defaultClusterizeCondition
 ): MetaClusterizedFlatTree {
+    let maxDuration = -1;
     return flatTree
-        .reduce<FlatTreeNode[][]>((acc, node) => {
+        .reduce<MetaClusterizedFlatTreeNode[]>((acc, node) => {
             const lastCluster = acc[acc.length - 1];
-            const lastNode = lastCluster && lastCluster[lastCluster.length - 1];
+            const lastNode = lastCluster && lastCluster[lastCluster.nodes.length - 1];
 
             if (lastNode && lastNode.level === node.level && condition(lastNode, node)) {
-                lastCluster.push(node);
+                if (node.source.duration > maxDuration) {
+                    lastCluster.color = node.source.color!;
+                    maxDuration = node.source.duration;
+                }
+                lastCluster.nodes.push(node);
             } else {
-                acc.push([node]);
+                acc.push({ nodes: [node], color: node.source.color! });
+                maxDuration = node.source.duration;
             }
-
             return acc;
         }, [])
-        .filter((nodes) => nodes.length)
-        .map((nodes) => ({
-            nodes,
-        }));
+        .filter((cluster) => cluster.nodes.length);
 }
 
 export const clusterizeFlatTree = (
@@ -118,13 +121,12 @@ export const clusterizeFlatTree = (
     stickDistance = STICK_DISTANCE,
     minBlockSize = MIN_BLOCK_SIZE
 ): ClusterizedFlatTree => {
-    let lastCluster: FlatTreeNode[] | null = null;
+    let lastCluster: MetaClusterizedFlatTreeNode | null = null;
     let lastNode: FlatTreeNode | null = null;
-    let largestNode: FlatTreeNode | null = null;
     let index = 0;
 
     return metaClusterizedFlatTree
-        .reduce<FlatTreeNode[][]>((acc, { nodes }) => {
+        .reduce<MetaClusterizedFlatTreeNode[]>((acc, { nodes, color }) => {
             lastCluster = null;
             lastNode = null;
             index = 0;
@@ -132,7 +134,7 @@ export const clusterizeFlatTree = (
             for (const node of nodes) {
                 if (checkNodeTimeboundNesting(node, start, end)) {
                     if (lastCluster && !lastNode) {
-                        lastCluster[index] = node;
+                        lastCluster.nodes[index] = node;
                         index++;
                     } else if (
                         lastCluster &&
@@ -142,36 +144,33 @@ export const clusterizeFlatTree = (
                         node.source.duration * zoom < minBlockSize &&
                         lastNode.source.duration * zoom < minBlockSize
                     ) {
-                        lastCluster[index] = node;
+                        lastCluster.nodes[index] = node;
                         index++;
                     } else {
-                        lastCluster = [node];
+                        lastCluster = { nodes: [node], color };
                         index = 1;
 
                         acc.push(lastCluster);
                     }
 
                     lastNode = node;
-                    if (!largestNode || node.source.duration > largestNode.source.duration) {
-                        largestNode = node;
-                    }
                 }
             }
 
             return acc;
         }, [])
-        .map((nodes) => {
-            const node = nodes[0];
-            const duration = calcClusterDuration(nodes);
+        .map((cluster) => {
+            const node = cluster.nodes[0];
+            const duration = calcClusterDuration(cluster.nodes);
 
             return {
                 start: node.source.start,
                 end: node.source.start + duration,
                 duration,
                 type: node.source.type,
-                color: largestNode?.source.color,
+                color: cluster.color,
                 level: node.level,
-                nodes,
+                nodes: cluster.nodes,
             };
         });
 };
@@ -189,7 +188,16 @@ export const reclusterizeClusteredFlatTree = (
             if (cluster.duration * zoom <= MIN_CLUSTER_SIZE) {
                 acc.push(cluster);
             } else {
-                acc.push(...clusterizeFlatTree([cluster], zoom, start, end, stickDistance, minBlockSize));
+                acc.push(
+                    ...clusterizeFlatTree(
+                        [{ nodes: cluster.nodes, color: cluster.color }],
+                        zoom,
+                        start,
+                        end,
+                        stickDistance,
+                        minBlockSize
+                    )
+                );
             }
         }
 
