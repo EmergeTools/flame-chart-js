@@ -140,8 +140,13 @@ export default class FlameChartPlugin extends UIPlugin {
     }
 
     findNodeInCluster(region) {
-        const mouse = this.interactionsEngine.getMouse();
+        //const mouse = this.interactionsEngine.getMouse();
 
+        return {
+            data: region,
+            type: 'cluster',
+        };
+        /*
         if (region && region.type === 'cluster') {
             const hoveredNode = region.data.nodes.find(({ level, source: { start, duration } }) => {
                 const { x, y, w } = this.calcRect(start, duration, level);
@@ -157,6 +162,7 @@ export default class FlameChartPlugin extends UIPlugin {
             }
         }
         return null;
+        */
     }
 
     getColor(type: string = '_default', defaultColor?: string) {
@@ -196,13 +202,20 @@ export default class FlameChartPlugin extends UIPlugin {
     }
 
     initData() {
+        console.log('initting data');
+        console.log('flat tree');
+        console.log(this.flatTree);
         this.metaClusterizedFlatTree = metaClusterizeFlatTree(this.flatTree);
+        console.log('metaclusterized flat tree');
+        console.log(this.metaClusterizedFlatTree);
         this.initialClusterizedFlatTree = clusterizeFlatTree(
             this.metaClusterizedFlatTree,
             this.renderEngine.zoom,
             this.min,
             this.max
         );
+        console.log('clusterized flat tree');
+        console.log(this.initialClusterizedFlatTree);
 
         this.reclusterizeClusteredFlatTree();
     }
@@ -214,6 +227,8 @@ export default class FlameChartPlugin extends UIPlugin {
             this.renderEngine.positionX,
             this.renderEngine.positionX + this.renderEngine.getRealView()
         );
+        console.log('reclusterized flat tree');
+        console.log(this.actualClusterizedFlatTree);
     }
 
     calcRect(start: number, duration: number, level: number) {
@@ -282,6 +297,8 @@ export default class FlameChartPlugin extends UIPlugin {
         };
 
         const renderCluster = (cluster: ClusterizedFlatTreeNode, x: number, y: number, w: number) => {
+            console.log('rendering cluster');
+            console.log(cluster);
             const { type, nodes, color } = cluster;
             const mouse = this.interactionsEngine.getMouse();
 
@@ -291,13 +308,15 @@ export default class FlameChartPlugin extends UIPlugin {
 
             if (w >= 0.25) {
                 // TODO does this handle color correctly?
+                console.log('rendering rect');
                 this.renderEngine.addRectToRenderQueue(this.getColor(type, color), x, y, w);
                 if (nodes[0].source.outline) {
                     this.renderEngine.addStrokeToRenderQueue(nodes[0].source.outline, x, y, w, blockHeight);
                 }
             }
 
-            if (w >= minTextWidth && nodes.length === 1) {
+            if (w >= minTextWidth && nodes.length >= 1) {
+                console.log('rendering text');
                 this.renderEngine.addTextToRenderQueue(nodes[0].source.name, x, y, w);
             }
         };

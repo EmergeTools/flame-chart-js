@@ -75,6 +75,9 @@ export class SeparatedInteractionsEngine extends EventEmitter {
     }
 
     addHitRegion(type, data, x: number, y: number, w: number, h: number, cursor?: string) {
+        console.log('adding hit region');
+        console.log(type);
+        console.log(data);
         this.hitRegions.push({
             type,
             data,
