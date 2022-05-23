@@ -96,7 +96,7 @@ export function metaClusterizeFlatTree(
     return flatTree
         .reduce<MetaClusterizedFlatTreeNode[]>((acc, node) => {
             const lastCluster = acc[acc.length - 1];
-            const lastNode = lastCluster && lastCluster[lastCluster.nodes.length - 1];
+            const lastNode = lastCluster && lastCluster.nodes[lastCluster.nodes.length - 1];
 
             if (lastNode && lastNode.level === node.level && condition(lastNode, node)) {
                 if (node.source.duration > maxDuration) {
