@@ -262,6 +262,9 @@ export default class TimeframeSelectorPlugin extends UIPlugin<TimeframeSelectorP
         this.max = max;
         this.maxLevel = maxDepth;
 
+        this.renderEngine.setMinMax(min, max);
+        this.renderEngine.parent.setMinMax(min, max);
+
         this.clusters = metaClusterizeFlatTree(tree, () => true);
         this.actualClusters = clusterizeFlatTree(
             this.clusters,
