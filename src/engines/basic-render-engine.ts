@@ -409,8 +409,10 @@ export class BasicRenderEngine extends EventEmitter {
         this.ctx.shadowBlur = 5;
 
         this.setCtxColor(this.styles.tooltipBackgroundColor);
+        // 20 is double the offset above.
+        const startX = mouseX + fullWidth > this.width ? this.width - fullWidth - 20 : mouseX;
         this.ctx.fillRect(
-            mouseX,
+            startX,
             mouseY,
             fullWidth + this.blockPaddingLeftRight * 2,
             (this.charHeight + 2) * fields.length + this.blockPaddingLeftRight * 2
@@ -430,7 +432,7 @@ export class BasicRenderEngine extends EventEmitter {
 
             this.ctx.fillText(
                 text,
-                mouseX + this.blockPaddingLeftRight,
+                startX + this.blockPaddingLeftRight,
                 mouseY + this.blockHeight - this.blockPaddingTopBottom + (this.charHeight + 2) * index
             );
         });
