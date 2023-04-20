@@ -249,7 +249,7 @@ export default class TimeframeSelectorPlugin extends UIPlugin<TimeframeSelectorP
         this.shouldRender = true;
     }
 
-    setData(data: Data) {
+    setData(data: Data, resetZoom: boolean = false) {
         this.data = data;
 
         const nodes: DotNode[] = [];
@@ -268,7 +268,7 @@ export default class TimeframeSelectorPlugin extends UIPlugin<TimeframeSelectorP
         this.clusters = metaClusterizeFlatTree(tree, () => true);
         this.actualClusters = clusterizeFlatTree(
             this.clusters,
-            this.renderEngine.zoom,
+            resetZoom ? this.renderEngine.getInitialZoom() : this.renderEngine.zoom,
             this.min,
             this.max,
             2,
@@ -276,7 +276,7 @@ export default class TimeframeSelectorPlugin extends UIPlugin<TimeframeSelectorP
         );
         this.actualClusterizedFlatTree = reclusterizeClusteredFlatTree(
             this.actualClusters,
-            this.renderEngine.zoom,
+            resetZoom ? this.renderEngine.getInitialZoom() : this.renderEngine.zoom,
             this.min,
             this.max,
             2,
@@ -314,12 +314,16 @@ export default class TimeframeSelectorPlugin extends UIPlugin<TimeframeSelectorP
         this.nodes = nodes;
         this.maxLevel = maxLevel;
 
-        this.offscreenRender();
+        this.offscreenRender(resetZoom);
     }
 
-    offscreenRender() {
-        const zoom = this.renderEngine.zoom ?? this.renderEngine.getInitialZoom();
-        const positionX = this.renderEngine.positionX || this.offscreenRenderEngine.min;
+    offscreenRender(resetZoom: boolean = false) {
+        let zoom = this.renderEngine.zoom ?? this.renderEngine.getInitialZoom();
+        let positionX = this.renderEngine.positionX || this.offscreenRenderEngine.min;
+        if (resetZoom) {
+            zoom = this.renderEngine.getInitialZoom();
+            positionX = this.offscreenRenderEngine.min;
+        }
 
         // Initialize
         this.offscreenRenderEngine.setZoom(zoom);

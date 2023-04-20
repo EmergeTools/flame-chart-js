@@ -332,17 +332,21 @@ export class BasicRenderEngine extends EventEmitter {
         return this.width / this.zoom;
     }
 
-    resetView() {
+    resetView(resetZoom: boolean = false) {
         // Check if zoom is safe, if not, reset it.
         if (!this.zoom) {
             this.setZoom(this.getInitialZoom());
         } else if (Math.abs(this.zoom - this.getInitialZoom()) / this.getInitialZoom() < 0.1) {
             // Reset zoom if it's close to initial zoom to prevent jitter when scrolling.
             this.setZoom(this.getInitialZoom());
+        } else if (resetZoom) {
+            this.setZoom(this.getInitialZoom());
         }
 
         // Check if position is safe, if not, reset it.
         if (!this.positionX || this.positionX < this.min || this.positionX > this.max) {
+            this.setPositionX(this.min);
+        } else if (resetZoom) {
             this.setPositionX(this.min);
         }
     }

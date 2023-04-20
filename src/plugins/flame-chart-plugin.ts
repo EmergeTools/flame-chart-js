@@ -99,13 +99,15 @@ export default class FlameChartPlugin extends UIPlugin {
         }
     }
 
-    reset() {
+    reset(resetZoom: boolean = false) {
         this.colors = {};
         this.lastRandomColor = DEFAULT_COLOR;
 
         this.selectedRegion = null;
         // Check if position is safe, if not, reset it
         if (!this.positionY || this.positionY < 0) {
+            this.setPositionY(0);
+        } else if (resetZoom) {
             this.setPositionY(0);
         }
     }
@@ -177,16 +179,16 @@ export default class FlameChartPlugin extends UIPlugin {
         return this.colors[type];
     }
 
-    setData(data: Data) {
+    setData(data: Data, resetZoom: boolean = false) {
         this.data = data;
 
         this.parseData();
         this.initData();
 
-        this.reset();
+        this.reset(resetZoom);
 
         this.renderEngine.recalcMinMax();
-        this.renderEngine.resetParentView();
+        this.renderEngine.resetParentView(resetZoom);
     }
 
     parseData() {

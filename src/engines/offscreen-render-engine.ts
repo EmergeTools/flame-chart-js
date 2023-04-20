@@ -138,8 +138,8 @@ export class OffscreenRenderEngine extends BasicRenderEngine {
         this.parent.renderTooltipFromData(fields, mouse);
     }
 
-    resetParentView() {
-        this.parent.resetView();
+    resetParentView(resetZoom: boolean = false) {
+        this.parent.resetView(resetZoom);
         this.parent.render();
     }
 
