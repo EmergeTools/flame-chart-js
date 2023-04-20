@@ -57,6 +57,12 @@ export class RenderEngine extends BasicRenderEngine {
         return offscreenRenderEngine;
     }
 
+    // This function has a bug. When updating the data, one of the children
+    // will receive the update first. When this is called, the other children
+    // max have old data leading to incorrect min/max computation.
+    // Example: flamechart and timeline. Flamechart gets new (shorter) data,
+    // but timeline has old data. The timeline will then have a larger max,
+    // which will be incorrectly used below./
     calcMinMax() {
         const min = this.plugins
             .map(({ min }) => min)
@@ -77,7 +83,6 @@ export class RenderEngine extends BasicRenderEngine {
 
     override setMinMax(min: number, max: number) {
         super.setMinMax(min, max);
-
         this.children.forEach((engine) => engine.setMinMax(min, max));
     }
 

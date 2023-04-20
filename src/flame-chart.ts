@@ -113,6 +113,10 @@ export default class FlameChart extends FlameChartContainer<FlameChartStyles> {
                 if (timeframeSelectorPlugin) {
                     timeframeSelectorPlugin.setData(data, resetZoom);
                 }
+                // Reset again to make sure that the flame chart is rendered correctly
+                if (flameChartPlugin) {
+                    flameChartPlugin.setData(data, resetZoom);
+                }
             };
 
             this.setFlameChartPosition = ({ x, y }) => {

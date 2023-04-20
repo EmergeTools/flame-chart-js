@@ -268,7 +268,7 @@ export default class TimeframeSelectorPlugin extends UIPlugin<TimeframeSelectorP
         this.clusters = metaClusterizeFlatTree(tree, () => true);
         this.actualClusters = clusterizeFlatTree(
             this.clusters,
-            this.renderEngine.zoom,
+            resetZoom ? this.renderEngine.getInitialZoom() : this.renderEngine.zoom,
             this.min,
             this.max,
             2,
@@ -276,7 +276,7 @@ export default class TimeframeSelectorPlugin extends UIPlugin<TimeframeSelectorP
         );
         this.actualClusterizedFlatTree = reclusterizeClusteredFlatTree(
             this.actualClusters,
-            this.renderEngine.zoom,
+            resetZoom ? this.renderEngine.getInitialZoom() : this.renderEngine.zoom,
             this.min,
             this.max,
             2,
