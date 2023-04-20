@@ -35,7 +35,7 @@ export type FlameChartOptions = {
 const defaultSettings: FlameChartSettings = {};
 
 export default class FlameChart extends FlameChartContainer<FlameChartStyles> {
-    setData: (data: Data) => void;
+    setData: (data: Data, resetZoom: boolean) => void;
     setMarks: (data: Marks) => void;
     setWaterfall: (data: Waterfall) => void;
     setFlameChartPosition: ({ x, y }: { x: number; y: number }) => void;
@@ -105,13 +105,13 @@ export default class FlameChart extends FlameChartContainer<FlameChartStyles> {
         });
 
         if (flameChartPlugin && timeframeSelectorPlugin) {
-            this.setData = (data) => {
+            this.setData = (data, resetZoom = false) => {
                 if (flameChartPlugin) {
-                    flameChartPlugin.setData(data);
+                    flameChartPlugin.setData(data, resetZoom);
                 }
 
                 if (timeframeSelectorPlugin) {
-                    timeframeSelectorPlugin.setData(data);
+                    timeframeSelectorPlugin.setData(data, resetZoom);
                 }
             };
 
