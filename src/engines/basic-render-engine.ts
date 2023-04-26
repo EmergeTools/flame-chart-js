@@ -414,7 +414,13 @@ export class BasicRenderEngine extends EventEmitter {
 
         this.setCtxColor(this.styles.tooltipBackgroundColor);
         // 20 is double the offset above.
-        const startX = mouseX + fullWidth > this.width ? this.width - fullWidth - 20 : mouseX;
+        let startX = mouseX;
+        if (mouseX + fullWidth > this.width) {
+            startX = this.width - fullWidth - 20;
+        }
+        if (startX < 10) {
+            startX = 10;
+        }
         this.ctx.fillRect(
             startX,
             mouseY,
